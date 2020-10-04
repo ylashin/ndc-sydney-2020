@@ -6,3 +6,4 @@ data.write.mode("overwrite").orc("/home/yousry/data/know-your-data/case4")
 data.show(5, false)
 
 
+// https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ORC
