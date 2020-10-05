@@ -1,7 +1,7 @@
 /* 
 
 docker start atlaswithspark
-docker exec -it 2bd bash
+docker exec -it atlaswithspark bash
 
 cd /data
 /opt/spark-2.4.6-bin-hadoop2.7/bin/spark-shell \
@@ -23,6 +23,6 @@ val countries = readCsv("./countries.csv")
 val ordersWithCountryName = orders.join(countries, Seq("CountryCode")).drop("CountryCode")
 ordersWithCountryName.show(5)
 
-ordersWithCountryName.repartition(1).write.mode("overwrite").option("header", "true").csv("/data/ordersWithCountryName")
+ordersWithCountryName.repartition(1).write.mode("overwrite").option("header", "true").csv("./ordersWithCountryName")
 
 sys.exit(0)
