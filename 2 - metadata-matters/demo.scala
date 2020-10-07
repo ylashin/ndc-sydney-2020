@@ -52,9 +52,9 @@ PARTITIONED BY (year INT,month INT, day INT)
 STORED AS ORC
 LOCATION '/mnt/c/data/metadata-matters'
 """
-spark.sql("drop table if exists events")
+spark.sql("DROP TABLE IF EXISTS events")
 spark.sql(tableCreationSql)
 spark.sql("MSCK REPAIR TABLE events")
+spark.sql("SHOW TABLES").show
 
-// Hive needs to be bootstrapped
 spark.table("events").where($"year" === 2019 && $"month" === 10 && $"day".between(1,7)).count
