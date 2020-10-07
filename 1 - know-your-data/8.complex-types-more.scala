@@ -24,6 +24,3 @@ data.repartition(12, $"ArrayColumn").write.mode("overwrite").orc("/home/yousry/d
 
 data.show(5)
 
-
-
-//java -jar .\orc-tools-1.6.3-uber.jar data .\data\case8\part-

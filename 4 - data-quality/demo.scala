@@ -1,8 +1,8 @@
 /* download deequ jar from https://search.maven.org/artifact/com.amazon.deequ/deequ/1.0.5/jar
    make sure you are on java 8: sudo update-alternatives --config java
    run:  
-   cd ~/repos/ndc-sydney-2020/4 - data-quality
-   ~/spark-2.4.7/bin/spark-shell --driver-memory 12g --jars ./deequ-1.0.5.jar
+   cd ~/repos/ndc-sydney-2020/4\ -\ data-quality/
+   spark-shell --jars ./deequ-1.0.5.jar
 */
 import com.amazon.deequ.VerificationSuite
 import com.amazon.deequ.checks.{Check, CheckLevel, CheckStatus}

@@ -1,4 +1,4 @@
-val basePath = "/mnt/c/Temp/sample-big-data"
+val basePath = "/mnt/c/data/skewness"
 
 val df = spark.read.orc(s"${basePath}/raster-table")
 

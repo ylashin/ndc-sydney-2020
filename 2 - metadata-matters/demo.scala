@@ -1,10 +1,14 @@
+// RUN THIS DEMO WITH SPARK 3.x, it fails on Spark 2.4 with some HIVE error
+
+// ~/spark-3.0.1/bin/spark-shell --driver-memory 12g
+
 val daysRange = 365
 
 val data = spark.range(100000000)
   .toDF
   .withColumn("start", lit("2019-01-01") cast "date")
   .withColumn("increment", ((rand() * daysRange) % daysRange) cast "int")
-  .withColumn("date", date_add($"start", $"increment"))
+  .withColumn("date", expr("date_add(start, increment)"))
   .drop("start")
   .withColumn("year", year($"date"))
   .withColumn("month", month($"date"))
@@ -31,11 +35,9 @@ data.write
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-//val networkPath = """\\wsl$\Ubuntu-20.04\home\yousry\data\metadata-matters"""
-//spark.read.orc(networkPath).where($"year" === 2015 && $"month" === 10 && $"day".between(1,7)).count
-
-spark.read.orc("/mnt/c/data/metadata-matters").where($"year" === 2019 && $"month" === 10 && $"day".between(1,7)).count
 spark.read.orc("/home/yousry/data/metadata-matters").where($"year" === 2019 && $"month" === 10 && $"day".between(1,7)).count
+spark.read.orc("/mnt/c/data/metadata-matters").where($"year" === 2019 && $"month" === 10 && $"day".between(1,7)).count
+
 
 val paths = (1 to 7).map(x => s"/mnt/c/data/metadata-matters/year=2019/month=10/day=$x")
 spark.read.option("basePath", "/mnt/c/data/metadata-matters")
