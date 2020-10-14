@@ -1,1 +1,1 @@
-# ndc-sydney-2020
+This repo has presentation & source code for the demos of my big data talk at NDC Sydney 2020.
