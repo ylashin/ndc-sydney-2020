@@ -2,71 +2,60 @@ import sys.process._
 
 "rm -rf /home/yousry/data/know-your-data" !
 
-println("-" * 100)
+println("#" * 100)
 
-def printOutputSize() = { 
+def printOutputSize(df: org.apache.spark.sql.DataFrame, truncateOutput: Boolean = false) = { 
     
+    df.show(5, truncateOutput)
+
     "du -h -d1 /home/yousry/data/know-your-data" #|  "sort -k 2" ! 
 
-    println("-" * 100)
-    readLine()
+    println("#" * 100)
+    println()
+    //readLine()
 }
 
 val simpleArray = spark.range(10000000).toDF
-
 simpleArray.write.mode("overwrite").orc("/home/yousry/data/know-your-data/1-simple-array")
 
-simpleArray.show(5)
-
-printOutputSize()
+printOutputSize(simpleArray)
 
 //------------------------------------------------------------------------------------------------
 
-val withStringColumn = spark.range(10000000).toDF
+val withStringColumn = simpleArray
     .withColumn("StringCol", concat(lit("prefix-"), round(rand() * 1000000, 0) cast "int" , lit("-suffix")) )
 
 withStringColumn.write.mode("overwrite").orc("/home/yousry/data/know-your-data/2-with-string-column")
 
-withStringColumn.show(5, false)
-
-printOutputSize()
+printOutputSize(withStringColumn)
 
 //------------------------------------------------------------------------------------------------
 
-val withLessCardinality = spark.range(10000000).toDF
+val withLessCardinality = simpleArray
     .withColumn("StringCol", concat(lit("prefix-"), round(rand() * 10, 0) cast "int" , lit("-suffix")) )
 
 withLessCardinality.write.mode("overwrite").orc("/home/yousry/data/know-your-data/3-with-less-cardinality")
 
-withLessCardinality.show(5, false)
-
-printOutputSize()
+printOutputSize(withLessCardinality)
 
 //------------------------------------------------------------------------------------------------
 
-val withWideStringColumn = spark.range(10000000).toDF
+val withWideStringColumn = simpleArray
     .withColumn("StringCol", concat(lit("prefix-double-size-text-"), round(rand() * 10, 0) cast "int" , lit("-suffix-double-size-text")) )
 
 withWideStringColumn.write.mode("overwrite").orc("/home/yousry/data/know-your-data/4-with-wider-string")
 
-withWideStringColumn.show(5, false)
-
-
-printOutputSize()
+printOutputSize(withWideStringColumn)
 
 //------------------------------------------------------------------------------------------------
 
-val withConstantColumns = spark.range(10000000).toDF
-    .withColumn("StringCol", concat(lit("prefix-double-size-text-"), round(rand() * 10, 0) cast "int" , lit("-suffix-double-size-text")) )
+val withConstantColumns = withWideStringColumn
     .withColumn("ConstantCol1", lit("HelloBigData"))
     .withColumn("ConstantCol2", lit(123.45))
 
 withConstantColumns.write.mode("overwrite").orc("/home/yousry/data/know-your-data/5-with-constant-columns")
 
-withConstantColumns.show(5, false)
-
-
-printOutputSize()
+printOutputSize(withConstantColumns)
 
 //------------------------------------------------------------------------------------------------
 
@@ -75,21 +64,16 @@ val getArray = udf((id: Long) => {
    (1 to 100).map(x => rnd.nextInt(100))
 })
 
-val withArrayColumn = spark.range(10000000).toDF
-    .withColumn("StringCol", concat(lit("prefix-double-size-text-"), round(rand() * 10, 0) cast "int", lit("-suffix-double-size-text")) )
-    .withColumn("ConstantCol1", lit("HelloBigData"))
-    .withColumn("ConstantCol2", lit(123.45))
+val withArrayColumn = withConstantColumns
     .withColumn("ArrayColumn", getArray($"id"))
     .cache
 
 withArrayColumn.write.mode("overwrite").orc("/home/yousry/data/know-your-data/6-with-array-column")
 
-withArrayColumn.show(5)
-
 val distinctArrayValuesCount = withArrayColumn.select("ArrayColumn").distinct.count
 println(s"Distinct array values count : ${distinctArrayValuesCount}")
 
-printOutputSize()
+printOutputSize(withArrayColumn, true)
 
 //------------------------------------------------------------------------------------------------
 
@@ -102,17 +86,12 @@ val getArrayAsString = udf((id: Long) => {
     array.map(_.toString).mkString(",")
 })
 
-val withArrayPersistedAsString = spark.range(10000000).toDF
-    .withColumn("StringCol", concat(lit("prefix-double-size-text-"), round(rand() * 10, 0) cast "int", lit("-suffix-double-size-text")) )
-    .withColumn("ConstantCol1", lit("HelloBigData"))
-    .withColumn("ConstantCol2", lit(123.45))
+val withArrayPersistedAsString = withConstantColumns
     .withColumn("ArrayColumn", getArrayAsString($"id"))
 
 withArrayPersistedAsString.write.mode("overwrite").orc("/home/yousry/data/know-your-data/7-with-string-array-column")
 
-withArrayPersistedAsString.show(5)
-
-printOutputSize()
+printOutputSize(withArrayPersistedAsString, true)
 
 //------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,5 @@
 // RUN THIS DEMO WITH SPARK 3.x, it fails on Spark 2.4 with some HIVE error
-
-// ~/spark-3.0.1/bin/spark-shell --driver-memory 12g
+// cd ~ && rm derby.log && rm -rf metastore_db && ~/spark-3.0.1/bin/spark-shell --driver-memory 12g
 
 val daysRange = 365
 
